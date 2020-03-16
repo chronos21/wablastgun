@@ -1,0 +1,29 @@
+<div id="qrcode" style="display: flex; justify-content: center; align-items: center; height: 100vh;"></div>
+<script src="./qrcode.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+<script type="text/javascript">
+    let status = "<%= state.status %>"
+    console.log(status)
+    if(status === 'ready'){
+        window.location.href = '/state'
+    }
+    
+    var qrCode = "<%= state.qr %>"
+    new QRCode(document.getElementById("qrcode"), qrCode);
+
+</script>
+<script>
+    let stateInterval
+    stateInterval = setInterval(() => {
+        axios.get('/state').then(res => {
+            let {status, qr} = res.data.state
+            if(qr !== qrCode){
+                window.location.reload
+            } else if(status === 'ready'){
+                window.location.href = '/state'
+            }
+        })
+    }, 5000)
+    console.log('hello world')
+
+</script>
