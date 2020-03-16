@@ -18,12 +18,12 @@
         axios.get('/state').then(res => {
             let {status, qr} = res.data.state
             console.log(res)
-            if(qr !== qrCode){
-                window.location.reload()
-            } else if(status === 'ready'){
+            if(status === 'ready'){
                 console.log('triggered')
                 window.location.href = '/state'
-            }
+            } else if(qr !== qrCode){
+                window.location.reload()
+            } 
         })
     }, 5000)
     console.log('hello world')

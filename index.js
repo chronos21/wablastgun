@@ -3,6 +3,8 @@ const app = express()
 const fs = require('fs');
 const { Client, MessageMedia } = require('whatsapp-web.js');
 const PORT = process.env.PORT || 8080;
+const SESSION_FILE_PATH = './session.json';
+
 
 let state = {
     status: 'init',
@@ -19,6 +21,37 @@ app.get('/setup', async(req, res) => {
 
 app.get('/', (req, res) => {
     res.redirect('/state')
+})
+
+app.get('/reinit', async (req, res) => {
+    let message = 'Re-Init'
+    try{
+        await client.destroy()
+        client.initialize()
+    } catch(err){
+        message = 'Re-Init Failed'
+    }
+    res.json({state, message})
+})
+
+app.get('/reset', async (req, res) => {
+    let message = 'Force Reset'
+    try{
+        await client.resetState()
+    } catch(err){
+        message = 'Force Reset Failed'
+    }
+    res.json({state, message})
+})
+
+app.get('/destroy-session', (req, res) => {
+    try {
+        fs.unlinkSync(SESSION_FILE_PATH)
+        res.json({msg: 'Session Purge'})
+      } catch(err) {
+        console.error(err)
+        res.json({msg: 'Purge Failed'})
+      }
 })
 
 app.get('/state', (req, res)=>{
@@ -55,7 +88,6 @@ app.get('/send', async(req, res) => {
     }
 })
 
-const SESSION_FILE_PATH = './session.json';
 let sessionCfg;
 if (fs.existsSync(SESSION_FILE_PATH)) {
     sessionCfg = require(SESSION_FILE_PATH);
@@ -77,7 +109,7 @@ client.on('qr', (qr) => {
 client.on('authenticated', (session) => {
     console.log('AUTHENTICATED', session);
     state.status = 'authenticated'
-    sessionCfg=session;
+    sessionCfg = session;
     fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), function (err) {
         if (err) {
             console.error(err);
@@ -102,6 +134,7 @@ client.on('message', async msg => {
 });
 
 client.on('disconnected', (reason) => {
+    state.status = 'disconnected'
     console.log('Client was logged out', reason);
 });
 
