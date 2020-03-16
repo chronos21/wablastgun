@@ -17,9 +17,11 @@
     stateInterval = setInterval(() => {
         axios.get('/state').then(res => {
             let {status, qr} = res.data.state
+            console.log(res)
             if(qr !== qrCode){
-                window.location.reload
+                window.location.reload()
             } else if(status === 'ready'){
+                console.log('triggered')
                 window.location.href = '/state'
             }
         })

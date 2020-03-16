@@ -17,6 +17,10 @@ app.get('/setup', async(req, res) => {
     res.render('setup', {state})
 })
 
+app.get('/', (req, res) => {
+    res.redirect('/state')
+})
+
 app.get('/state', (req, res)=>{
     res.json({state})
 })
