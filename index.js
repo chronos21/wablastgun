@@ -2,6 +2,7 @@ const express =require('express')
 const app = express()
 const fs = require('fs');
 const { Client, MessageMedia } = require('whatsapp-web.js');
+const PORT = process.env.PORT || 8080;
 
 let state = {
     status: 'init',
@@ -98,4 +99,4 @@ client.on('disconnected', (reason) => {
 });
 
 
-app.listen(8080, ()=> console.log('Stato'))
+app.listen(PORT, ()=> console.log('Stato'))
