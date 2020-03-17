@@ -4,16 +4,18 @@ const fs = require('fs');
 const { Client, MessageMedia } = require('whatsapp-web.js');
 const PORT = process.env.PORT || 8080;
 const SESSION_FILE_PATH = './session.json';
-
+const multer  = require('multer')
+var storage = multer.memoryStorage()
+var upload = multer({ storage: storage })
 
 let state = {
     status: 'init',
     qr: ''
 };
 
-
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use(express.urlencoded({extended: true}));
 
 app.get('/setup', async(req, res) => {
     res.render('setup', {state})
@@ -68,20 +70,33 @@ app.get('/contacts', async(req, res) => {
     }
 })
 
+//Change to POST
+
 app.get('/send', async(req, res) => {
+    res.render('form')
+})
+
+app.post('/send', upload.single('image'), async(req, res) => {
     try{
-        let {id, message} = req.query
-        let result = []
-        id = id.split('|')
-        if(!id && !message){
+        let {ids, message} = req.body
+        if(!ids && !message){
             return res.status(404).end()
         }
-        console.log(id)
-        for(let item of id){
-            let data = await client.sendMessage(item, message)
-            result.push(data)
+        let results = []
+        ids = ids.trim().split('|')
+        let content = message
+        
+        if(req.file && message === 'image'){
+            let mimetype = req.file.mimetype
+            let base64Img = req.file.buffer.toString('base64')
+            content = new MessageMedia(mimetype, base64Img)
         }
-        res.json({result})
+
+        for(let id of ids){
+            let data = await client.sendMessage(id, content)
+            results.push(data)
+        }
+        res.json({ids, content, results})
     } catch(err){
         console.log(err)
         res.json({err})
@@ -119,7 +134,6 @@ client.on('authenticated', (session) => {
 
 client.on('auth_failure', msg => {
     state.status = 'auth_failure'
-    // Fired if session restore was unsuccessfull
     console.error('AUTHENTICATION FAILURE', msg);
 });
 
