@@ -2,7 +2,7 @@ const express =require('express')
 const app = express()
 const fs = require('fs');
 const { Client, MessageMedia } = require('whatsapp-web.js');
-const PORT = process.env.PORT || 8080;
+const PORT = 3012 || process.env.PORT;
 const SESSION_FILE_PATH = './session.json';
 const multer  = require('multer')
 var storage = multer.memoryStorage()
@@ -36,6 +36,16 @@ app.get('/reinit', async (req, res) => {
     res.json({state, message})
 })
 
+app.get('/stop', async(req, res) => {
+    let message = 'Stop'
+    try{
+        await client.destroy()
+    } catch(err){
+        message = 'Stop Failed'
+    }
+    res.json({state, message})
+})
+
 app.get('/reset', async (req, res) => {
     let message = 'Force Reset'
     try{
@@ -62,15 +72,18 @@ app.get('/state', (req, res)=>{
 
 app.get('/contacts', async(req, res) => {
     try{
+        let {json} = req.query
         let data = await client.getContacts()
-        res.json({data})
+        if(json){
+            res.json({data})
+        } else {
+            res.render('contacts', {data})
+        }
     } catch(err){
         console.log(err)
         res.status(404).end()
     }
 })
-
-//Change to POST
 
 app.get('/send', async(req, res) => {
     res.render('form')
@@ -83,7 +96,9 @@ app.post('/send', upload.single('image'), async(req, res) => {
             return res.status(404).end()
         }
         let results = []
-        ids = ids.trim().split('|')
+        if(!Array.isArray(ids)){
+            ids = ids.trim().split('|')
+        }
         let content = message
         
         if(req.file && message === 'image'){

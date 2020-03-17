@@ -1,0 +1,26 @@
+<%- include('./header') %>
+
+<div class="container mt-3">
+    <h2 class="mb-3">Available Contacts</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>name</th>
+                <th>contactId</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% data.forEach(function(item, index){ %>
+            <tr>
+                <td><%= index + 1 %></td>
+                <td><%= item.name || item.pushname || item.number %></td>
+                <td><%= item.id._serialized %></td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+
+<%- include('./footer') %>

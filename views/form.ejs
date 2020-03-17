@@ -1,17 +1,20 @@
+<%- include('./header') %>
 <style>
-    input{
-        display: block;
-        margin-bottom: 10px;
-        width: 100%;
-    }
     form{
         max-width: 700px;
         margin: 20px auto;
     }
 </style>
+
+
 <form method="POST" action="/send" enctype="multipart/form-data"> 
-    <input name="message" placeholder="message, only message. input 'image' to upload image">
-    <input name="ids" placeholder="contactIds separate by | to bulk send. check /contacts">
-    <input name="image" type="file" placeholder="image, only image">
-    <button>Submit</button>
+    <h2 class="mb-3">Send message</h2>
+    <input name="ids" class="form-control" placeholder="contactIds separate by | to bulk send. check /contacts">
+    <br>
+    <textarea rows="5" name="message" class="form-control" placeholder="message, only message. type 'image' to upload image"></textarea>
+    <br>
+    <input name="image" class="form-control-file" type="file" placeholder="image, only image">
+    <br>
+    <button class="btn btn-primary">Submit</button>
 </form>
+<%- include('./footer') %>
