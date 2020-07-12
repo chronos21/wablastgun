@@ -1,20 +1,74 @@
 <%- include('./header') %>
 <style>
-    form{
+    form {
         max-width: 700px;
         margin: 20px auto;
     }
+
+    .form-check-input{
+        cursor: pointer;
+    }
 </style>
 
+<div class="container">
+    <form method="POST" action="/send" enctype="multipart/form-data">
+        <button class="btn btn-primary float-right" type="submit">Submit</button>
+        <h3 class="mb-3">Send message</h3>
+        <label>Text</label>
+        <textarea rows="5" name="message" class="form-control"
+            placeholder="your message goes here..."></textarea>
+        <br>
+        <label>Image</label>
+        <input name="image" class="form-control-file" type="file" placeholder="image, only image">
+        <br>
+        <div class="mt-4" >
+            <div class="row">
+                <div class="col">
+                    <h4>Available Contacts</h4>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary" type="button" onclick="toggleSelect(true)">Select All</button>
+                    <button class="btn btn-danger" type="button" onclick="toggleSelect(false)">Deselect All</button>
+                </div>
+            </div>
+            
+            
+            <br>
 
-<form method="POST" action="/send" enctype="multipart/form-data"> 
-    <h2 class="mb-3">Send message</h2>
-    <input name="ids" class="form-control" placeholder="contactIds separate by | to bulk send. check /contacts">
-    <br>
-    <textarea rows="5" name="message" class="form-control" placeholder="message, only message. type 'image' to upload image"></textarea>
-    <br>
-    <input name="image" class="form-control-file" type="file" placeholder="image, only image">
-    <br>
-    <button class="btn btn-primary">Submit</button>
-</form>
+            <div id="contact-list">
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>name</th>
+                            <th>contactId</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% contacts.forEach(function(item){ %>
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="check-1" name="ids[]" checked value="<%= item.id._serialized %>">
+                                </div>
+                            </td>
+                            <td><%= item.name || item.pushname || item.number %></td>
+                            <td><%= item.id._serialized %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleSelect(bool) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = bool;
+        }
+    }
+</script>
 <%- include('./footer') %>

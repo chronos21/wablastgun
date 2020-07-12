@@ -5,9 +5,9 @@
     let status = "<%= state.status %>"
     console.log(status)
     if(status === 'ready'){
-        window.location.href = '/state'
+        window.location.href = '/send'
     }
-    
+
     var qrCode = "<%= state.qr %>"
     new QRCode(document.getElementById("qrcode"), qrCode);
 
@@ -20,10 +20,10 @@
             console.log(res)
             if(status === 'ready'){
                 console.log('triggered')
-                window.location.href = '/state'
+                window.location.href = '/send'
             } else if(qr !== qrCode){
                 window.location.reload()
-            } 
+            }
         })
     }, 2000)
     console.log('hello world')
